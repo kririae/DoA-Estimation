@@ -4,8 +4,8 @@ load("Observations_nb.mat");                      % load data
 % X =  ;                                          % 4-channel received signals 
 % fs = ;                                          % sample rate (Hz)
 %% Plot waveform
-figure
-plot(X);
+figure                                            % need to be transformed.
+plot(X); 
 
 %% Array setup
 [Frame,nSensors] = size(X);                            
