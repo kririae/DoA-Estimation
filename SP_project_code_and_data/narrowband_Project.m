@@ -4,8 +4,8 @@ load("Observations_nb.mat");                      % load data
 % X =  ;                                          % 4-channel received signals 
 % fs = ;                                          % sample rate (Hz)
 %% Plot waveform
-figure                                            % need to be transformed.
-
+figure                                          % need to be transformed.
+f = (-Frame/2:Frame/2-1)*Fs/Frame;
 
 %% Array setup
 [Frame,nSensors] = size(X);                            
@@ -15,7 +15,7 @@ dy = 0;                                            % sensor distance in y direct
 c = 340;                                           % sound velocity  (m/s)
 n_source = 2;                                      % number of sources
 Index = linspace(0,J-1,J);
-p = (-(J-1)/2 + Index.') * [dx dy];                    % sensor position
+p = (-(J-1)/2 + Index.') * [dx dy];                % sensor position
 
 %% Plot sensor positions
 linspec = {'rx','MarkerSize',12,'LineWidth',2};
@@ -28,16 +28,19 @@ disp('The four microphones are ready !');
 
 
 %% DoA estimation (MUSIC) 
-stride = ;                                             % determine the angular resolution(deg)
-theta = -90:stride:90;                                 % grid
-f_c = ;                                                % center frequency  (Hz)
-R_x = ;                                                % autocorrelation estimate
-v = [sin(theta*pi/180);-cos(theta*pi/180)];            % direction vector  
-a_theta = exp(-1j*2*pi*f_c*(p*v)./c);                  % steer vector
+stride = 1;                                                 % determine the angular resolution(deg)
+theta = -90:stride:90;                                      % grid
+f_c = 2500;     % TODO                                      % center frequency  (Hz)
+R_x = X'*X/Frame;                                           % autocorrelation estimate
+v = [sin(theta*pi/180);-cos(theta*pi/180)];                 % direction vector  
+a_theta = exp(-1j*2*pi*f_c*(p*v)./c);                       % steer vector
 
 % implement eigen-decomposition 
 
-Un  = ;                                             % noise subspace (columns are eigenvectors), size: J*(J-n_source)
+[V, D] = eig(R_x);
+eig_val = diag(D);
+[eig_val, Idx] = sort(eig_val);
+Un = V(:, Idx(1:J-n_source));                       % noise subspace (columns are eigenvectors), size: J*(J-n_source)
 P_sm = 1./diag(a_theta'*(Un*Un')*a_theta);          % pseudo music power
 
 %% Plot the MUSIC pseudo power spectrum
@@ -66,5 +69,3 @@ doa_source = doa(minIdx);
 interfer = doa(maxIdx);
 disp(['The desired source DOA with MUSIC is: ',num2str(doa_source),' deg']);
 disp(['The interfering DOA with MUSIC is: ',num2str(interfer),' deg']);
-
-
