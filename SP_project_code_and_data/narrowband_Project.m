@@ -5,7 +5,7 @@ load("Observations_nb.mat");                      % load data
 % fs = ;                                          % sample rate (Hz)
 %% Plot waveform
 figure                                            % need to be transformed.
-plot(X); 
+
 
 %% Array setup
 [Frame,nSensors] = size(X);                            
