@@ -1,14 +1,27 @@
 clear all; close all;
 %% Load data
-load("Observations_nb.mat");                      % load data
+load("Observations_nb.mat");   
+[Frame,nSensors] = size(X);                       % load data
+f_domain = (-Frame/2:Frame/2-1)*fs/Frame;
 % X =  ;                                          % 4-channel received signals 
 % fs = ;                                          % sample rate (Hz)
 %% Plot waveform
 figure                                          % need to be transformed.
-f = (-Frame/2:Frame/2-1)*Fs/Frame;
+% plot(1:5000, real(X(:, 1)), 1:5000, imag(hilbert(X(:, 1))));
+for i=1:4
+    subplot(4, 2, i);
+    plot(real(X(:, i)));
+    title("The time-domain [" + i + "]");
+end
 
-%% Array setup
-[Frame,nSensors] = size(X);                            
+for i=1:4
+    subplot(4, 2, i+4);
+    plot(f_domain, abs(fftshift(fft(real(X(:, i))))/Frame)); % perform FFT on its real part.
+    title("The frequency-domain [" + i + "]");
+    axis([0 5000 0 inf]);
+end
+
+%% Array setup                           
 J = nSensors;                                      % number of sensors
 dx = 3.4*10^-2;                                    % inter-sensor distance in x direction (m)
 dy = 0;                                            % sensor distance in y direction (m)
