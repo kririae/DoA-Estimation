@@ -1,14 +1,14 @@
 clear all; close all;
 
 % Generate original data
-theta = [-30 60]; % The position of the source
+theta = [-60 40]*pi/180; % The position of the source
 J = 4; 
 dx = 3.4*10^-2; 
 dy = 0;
 c = 340; 
 Index = linspace(0,J-1,J);
 p = (-(J-1)/2 + Index.') * [dx dy]; % Position vector
-v = [sin(theta*pi/180); cos(theta*pi/180)];
+v = [sin(theta); cos(theta)];
 
 fs = 16000;
 t = 0:1/fs:3-1/fs;
@@ -16,6 +16,8 @@ Frame = fs*3;
 y = chirp(t, 1200, 3, 1200); % Sweep frequency
 f = (-Frame/2:Frame/2-1)*fs/Frame;
 % plot(f, abs(fftshift(fft(y))/Frame));
+
+figure;
 stft(y, fs, 'Window', hamming(256,'periodic'), 'OverlapLength', 236);
 
 len = 256;
@@ -27,26 +29,29 @@ Freq = []; % perform STFT
 X = zeros(4, Frame);
 
 for i=1:fn
-    idx = st_idx(i):ed_idx(i);
-    Y = fft(y(idx));
-    Y = Y(1:end/2-1);
-    [~, I] = max(abs(Y));
-    freq = (I - 1)*fs/Frame;
-    Freq(end+1) = freq;
     
-    for j_=idx
-        % s[t] = y[t]*e^{j \omega t}
-        t = j_/fs;
-        S(:, j_) = y(j_)*exp(j*2*pi*freq*t);
-    end
-   
-    a_theta = exp(-1j*2*pi*freq*(p*v)./c); % 4, 181 complex
-    X = a_theta*S;
-    % without noise
+idx = st_idx(i):ed_idx(i);
+Y = fft(y(idx));
+Y = Y(1:end/2-1);
+[~, I] = max(abs(Y));
+freq = (I - 1)*fs/length(idx);
+Freq(end+1) = freq;
+
+% init the complex signal
+S(1, idx) = abs(y(idx)).*exp(1i*2*pi*freq*idx/fs);
+S(2, idx) = S(1, idx);
+
+a_theta = exp(-1i*2*pi*freq*(p*v)./c); % 4, 181 complex
+X = a_theta*S;
+% without noise
+
 end
 
-X = X.';
+X = X.'; % Not $$\overline{X}^T$$
 save("data\gen.mat", "X", "fs");
+% plot(real(X(:, 1)));
+figure;
+plot((-Frame/2:Frame/2-1)*fs/Frame, abs(fftshift(fft(real(X(:, 1))))/Frame));
 
 function [ st_index, ed_index, fn ] = separate(len, inc, Frame)
     fn = (Frame-len)/inc + 1;

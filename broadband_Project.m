@@ -74,68 +74,70 @@ end
 %% MUSIC Algorithm
 
 function [ source_1, source_2, trust, f_c ] = MUSIC(X, fs)
-    % source_1 and source_2: the angle of the two sources
-    % trust: if the answer is accurate enough
-    % Deal with staionary signal.(short time)
-    trust = 1;
-    [Frame, nSensors] = size(X); 
-    
-    % estimate f_c
-     
-    sum = 0;
-    for i=1:4
-        Y = fft(real(X(:, i)));
-        Y = Y(1:end/2-1); % get the half of the graph
-        [~, I] = max(abs(Y)); % get its largest point
-        sum = sum + (I - 1)*fs/Frame;
-    end % already fixed.
-    % f_domain = (-Frame/2:Frame/2-1)*fs/Frame;
-    % plot(f_domain, abs(fftshift(fft(real(X(:, 1))))/Frame));
-    
-    % Initialize data
-    J = nSensors; 
-    dx = 3.4*10^-2; 
-    dy = 0;
-    c = 340; % Velocity of sound
-    Index = linspace(0,J-1,J);
-    p = (-(J-1)/2 + Index.') * [dx dy]; % Position vector
-    f_c = sum/4; % Get the f_c
-    if f_c >= 1200 || f_c <= 160
-        f_c = 0;
-        trust = 0; % select human's voice
-    end
-    
-    % Perform MUSIC
-    stride = 1; 
-    theta = -90:stride:90;  
-    v = [sin(theta*pi/180);-cos(theta*pi/180)];
-    R_x = X'*X/Frame;
-    a_theta = exp(-1j*2*pi*f_c*(p*v)./c); % steering vector
-    
-    [V, D] = eig(R_x);
-    eig_val = diag(D);
-    [~, Idx] = sort(eig_val);
-    Un = V(:, Idx(1:J-2)); % noise subspace
-    P_sm = 1./diag(a_theta'*(Un*Un')*a_theta);
 
-    % Get the two `Maximum point`
-    P_middle = abs(P_sm(2:end-1));
-    P_front = abs(P_sm(1:end-2));
-    P_back = abs(P_sm(3:end));
-    logic_front = (P_middle - P_front)>0;
-    logic_back = (P_middle - P_back)>0;
-    logic = logic_front & logic_back;
-    P_middle(~logic) = min(P_middle);
-    P_local = [abs(P_sm(1)); P_middle; abs(P_sm(end))];
-    [~,doa_Idx] = maxk(P_local, 2);
-    doa = theta(doa_Idx);
-    [~,minIdx] = min(abs(doa));
-    source_1 = doa(minIdx);
-    [~,maxIdx] = max(abs(doa));
-    source_2 = doa(maxIdx);
-    
-    tmp = [source_1 source_2];
-    tmp = sort(tmp);
-    source_1 = tmp(1);
-    source_2 = tmp(2);
+% source_1 and source_2: the angle of the two sources
+% trust: if the answer is accurate enough
+% Deal with staionary signal.(short time)
+trust = 1;
+[Frame, nSensors] = size(X); 
+
+% estimate f_c
+
+sum = 0;
+for i=1:4
+    Y = fft(real(X(:, i))); % ???
+    Y = Y(1:end/2-1); % get the half of the graph
+    [~, I] = max(abs(Y)); % get its largest point
+    sum = sum + (I - 1)*fs/Frame;
+end % already fixed.
+% f_domain = (-Frame/2:Frame/2-1)*fs/Frame;
+% plot(f_domain, abs(fftshift(fft(real(X(:, 1))))/Frame));
+
+% Initialize data
+J = nSensors; 
+dx = 3.4*10^-2; 
+dy = 0;
+c = 340; % Velocity of sound
+Index = linspace(0,J-1,J);
+p = (-(J-1)/2 + Index.') * [dx dy]; % Position vector
+f_c = sum/4; % Get the f_c
+if f_c >= 1200 || f_c <= 160
+    f_c = 0;
+    trust = 0; % select human's voice
+end
+
+% Perform MUSIC
+stride = 1; 
+theta = -90:stride:90;  
+v = [sin(theta*pi/180);-cos(theta*pi/180)];
+R_x = X'*X/Frame;
+a_theta = exp(-1j*2*pi*f_c*(p*v)./c); % steering vector
+
+[V, D] = eig(R_x);
+eig_val = diag(D);
+[~, Idx] = sort(eig_val);
+Un = V(:, Idx(1:J-2)); % noise subspace
+P_sm = 1./diag(a_theta'*(Un*Un')*a_theta);
+
+% Get the two `Maximum point`
+P_middle = abs(P_sm(2:end-1));
+P_front = abs(P_sm(1:end-2));
+P_back = abs(P_sm(3:end));
+logic_front = (P_middle - P_front)>0;
+logic_back = (P_middle - P_back)>0;
+logic = logic_front & logic_back;
+P_middle(~logic) = min(P_middle);
+P_local = [abs(P_sm(1)); P_middle; abs(P_sm(end))];
+[~,doa_Idx] = maxk(P_local, 2);
+doa = theta(doa_Idx);
+[~,minIdx] = min(abs(doa));
+source_1 = doa(minIdx);
+[~,maxIdx] = max(abs(doa));
+source_2 = doa(maxIdx);
+
+tmp = [source_1 source_2];
+tmp = sort(tmp);
+source_1 = tmp(1);
+source_2 = tmp(2);
+
 end
