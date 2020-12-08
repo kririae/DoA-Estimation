@@ -4,9 +4,10 @@ clear all; close all;
 theta = [-30 60]; % The position of the source
 J = 4; 
 dx = 3.4*10^-2; 
+dy = 0;
 c = 340; 
 Index = linspace(0,J-1,J);
-p = (-(J-1)/2 + Index.') * [dx]; % Position vector
+p = (-(J-1)/2 + Index.') * [dx dy]; % Position vector
 v = [sin(theta*pi/180); cos(theta*pi/180)];
 
 fs = 16000;
@@ -39,13 +40,13 @@ for i=1:fn
         S(:, j_) = y(j_)*exp(j*2*pi*freq*t);
     end
    
-    a_theta = exp(-1j*2*pi*freq*(p.'*v)./c); % 4, 181 complex
+    a_theta = exp(-1j*2*pi*freq*(p*v)./c); % 4, 181 complex
     X = a_theta*S;
     % without noise
 end
 
 X = X.';
-save("gen.mat", "X", "fs");
+save("data\gen.mat", "X", "fs");
 
 function [ st_index, ed_index, fn ] = separate(len, inc, Frame)
     fn = (Frame-len)/inc + 1;
