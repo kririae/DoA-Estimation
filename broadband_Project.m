@@ -1,8 +1,8 @@
 clear all; close all;
 
 %% Load data
-[X_audio, Fs] = audioread("Array_output\Array_output_01.wav");
-disp("Playing the audio: Array_output\Array_output_01.wav")
+[X_audio, Fs] = audioread("data\Array_output\Array_output_01.wav");
+disp("Playing the audio: data\Array_output\Array_output_01.wav")
 % soundsc(X_audio, Fs);
 [Frame, ~] = size(X_audio);
 afft = fftshift(fft(X_audio))/Frame;
@@ -22,7 +22,8 @@ title('Frequency Domain');
 xlabel('f (Hz)');
 
 %% Before STFT
-load("Observation_wb.mat");
+% load("Observation_wb.mat");
+load("data\gen.mat");
 [Frame, ~] = size(X);
 
 %% Perform window function
