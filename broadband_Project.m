@@ -22,8 +22,8 @@ title('Frequency Domain');
 xlabel('f (Hz)');
 
 %% Before STFT
-% load("Observation_wb.mat");
-load("data\gen.mat");
+load("data\Observation_wb.mat");
+% load("data\gen.mat");
 [Frame, ~] = size(X);
 
 %% Perform window function
@@ -41,6 +41,8 @@ tmp_y = [];
 F = [];
 for i=1:fn
     [source_1, source_2, trust, f_c] = MUSIC(X(st_idx(i):ed_idx(i), :), fs);
+
+    % TODO: optimize(allocate the memory)
     F(end+1) = f_c;
     if trust == 1
         tmp_x(end+1) = source_1;
@@ -135,6 +137,7 @@ source_1 = doa(minIdx);
 [~,maxIdx] = max(abs(doa));
 source_2 = doa(maxIdx);
 
+% sort the output
 tmp = [source_1 source_2];
 tmp = sort(tmp);
 source_1 = tmp(1);

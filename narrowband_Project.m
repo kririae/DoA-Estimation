@@ -1,14 +1,14 @@
 clear all; close all;
 %% Load data
-load("data\Observations_nb.mat");   
-% load("data\gen.mat"); 
+% load("data\Observations_nb.mat");   
+load("data\gen.mat"); 
 [Frame,nSensors] = size(X);                       % load data
 f_domain = (-Frame/2:Frame/2-1)*fs/Frame;
 % X =  ;                                          % 4-channel received signals 
 % fs = ;                                          % sample rate (Hz)
 %% Plot waveform
-figure                                          % need to be transformed.
-plot(1:5000, real(X(:, 1)), 1:5000, imag(hilbert(X(:, 1))));
+% figure                                          % need to be transformed.
+
 figure
 for i=1:4
     subplot(4, 2, i);
@@ -18,7 +18,7 @@ end
 
 for i=1:4
     subplot(4, 2, i+4);
-    plot(f_domain, abs(fftshift(fft(real(X(:, i))))/Frame)); % perform FFT on its real part.
+    plot(f_domain, abs(fftshift(fft(X(:, i)))/Frame)); % perform FFT on its real part.
     title("The frequency-domain [" + i + "]");
     axis([0 5000 0 inf]);
 end
@@ -45,7 +45,7 @@ disp('The four microphones are ready !');
 %% DoA estimation (MUSIC) 
 stride = 1;                                                 % determine the angular resolution(deg)
 theta = -90:stride:90;                                      % grid
-f_c = 2500;                                                 % center frequency  (Hz)
+f_c = 1200;                                                 % center frequency  (Hz)
 R_x = X'*X/Frame;                                           % autocorrelation estimate
 v = [sin(theta*pi/180); -cos(theta*pi/180)];                % direction vector  
 a_theta = exp(-1i*2*pi*f_c*(p*v)./c);                       % steer vector
@@ -88,5 +88,6 @@ interfer = doa(maxIdx);
 % locs = theta(sort(locs));
 % doa_source = locs(1);
 % interfer = locs(2);
+
 disp(['The desired source DOA with MUSIC is: ',num2str(doa_source),' deg']);
 disp(['The interfering DOA with MUSIC is: ',num2str(interfer),' deg']);
