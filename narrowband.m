@@ -43,9 +43,9 @@ disp('The four microphones are ready !');
 
 
 %% DoA estimation (MUSIC) 
-stride = 1;                                                 % determine the angular resolution(deg)
+stride = 0.5;                                                 % determine the angular resolution(deg)
 theta = -90:stride:90;                                      % grid
-f_c = 1200;                                                 % center frequency  (Hz)
+f_c = 2500;                                                 % center frequency  (Hz)
 R_x = X'*X/Frame;                                           % autocorrelation estimate
 v = [sin(theta*pi/180); -cos(theta*pi/180)];                % direction vector  
 a_theta = exp(-1i*2*pi*f_c*(p*v)./c);                       % steer vector
