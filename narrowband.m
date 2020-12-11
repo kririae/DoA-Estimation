@@ -1,7 +1,6 @@
 clear all; close all;
 %% Load data
-% load("data\Observations_nb.mat");   
-load("data\gen.mat"); 
+load("data\Observations_nb.mat");   
 [Frame,nSensors] = size(X);                       % load data
 f_domain = (-Frame/2:Frame/2-1)*fs/Frame;
 % X =  ;                                          % 4-channel received signals 
