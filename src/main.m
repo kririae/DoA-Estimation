@@ -1,34 +1,21 @@
 clear all;
 close all;
 
-NSOURCE = 1;
+NSOURCE = 2;
 fs = 16000;
+[y1, ~] = audioread("01-音轨.wav");
+[y2, ~] = audioread("02-音轨.wav");
+[y3, ~] = audioread("03-音轨.wav");
+[y4, ~] = audioread("04-音轨.wav");
+[Frame, ~] = size(y1);
+X = zeros(Frame, 4);
+X(:, 1) = hilbert(y1);
+X(:, 2) = hilbert(y2);
+X(:, 3) = hilbert(y3);
+X(:, 4) = hilbert(y4);
 
-samplingTime = 0.5; % seconds
-calcRate = 1/samplingTime;
-disp(['Calculation rate is: ', num2str(calcRate)]);
-
-devReader = audioDeviceReader( ...
-    'Driver', 'DirectSound', ...
-    'SamplesPerFrame', fs*samplingTime, ...
-    'SampleRate', fs, ...
-    'NumChannels', 4, ...
-    'BitDepth', '16-bit integer', ...
-    'Device', '麦克风 (USB YDB01 Audio Effect)', ...
-    'ChannelMappingSource', 'Property', ...
-    'ChannelMapping', [2 1 4 3] ...
-);
-setup(devReader);
-
-disp("Start collecting...")
-
-tic
-while toc < 20
-X = hilbert(devReader());
-
-[Frame, ~] = size(X);
-len = 1024;
-inc = 1024;
+len = 2048;
+inc = 2048;
 nfft = len; % The smallest 2^n \ge len, to optimize FFT
 [st_idx, ed_idx, fn] = separate(len, inc, Frame);
 
@@ -54,6 +41,7 @@ P = zeros([180/stride+1 1]); % -90:stride:90
 
 fr = [20 6000]*nfft/fs+1; % range of frequency (to add weight)
 
+% for i=1:ceil(nfft/2)
 for i=floor(fr(1)):ceil(fr(2))
     
 % P: index -> f
@@ -69,13 +57,21 @@ a_theta = exp(-1i*2*pi*f_c*(p*v)./c); % steering vector
 [V, D] = eig(R_x);
 eig_val = diag(D);
 [~, Idx] = sort(eig_val);
-Un = V(:, Idx(1:J-NSOURCE)); % noise subspace
+Un = V(:, Idx(1:J-1)); % noise subspace
 P_sm = diag(a_theta'*(Un*Un')*a_theta);
 P = P + P_sm;
 
 end
 
 P = 1./P;
+
+figure;
+linspec = {'b-','LineWidth',2};
+plot(theta, 10*log10(abs(P)), linspec{:});
+title('MUSIC pseudo power spectrum')
+xlabel('Angle in [degrees]');
+ylabel('Power spectrum in [dB]');
+xlim([-90,90])
 
 % Find the local maximum;
 P_middle = abs(P(2:end-1));
@@ -95,10 +91,6 @@ source_2 = doa(maxIdx);
 
 disp(['The first source with MUSIC is: ',num2str(source_1),' deg']);
 disp(['The second source with MUSIC is: ',num2str(source_2),' deg']);
-
-end
-
-release(devReader);
 
 function [ st_index, ed_index, fn ] = separate(len, inc, Frame)
   fn = floor((Frame-len)/inc + 1);
