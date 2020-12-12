@@ -1,35 +1,35 @@
 clear all; close all;
 %% Load data
-load("data\Observations_nb.mat");   
-[Frame,nSensors] = size(X);                       % load data
+load("..\data\Observations_nb.mat");   
+% load data
+[Frame,nSensors] = size(X);
 f_domain = (-Frame/2:Frame/2-1)*fs/Frame;
-% X =  ;                                          % 4-channel received signals 
-% fs = ;                                          % sample rate (Hz)
 %% Plot waveform
-% figure                                          % need to be transformed.
 
 figure
-for i=1:4
-    subplot(4, 2, i);
-    plot(real(X(:, i)));
-    title("The time-domain [" + i + "]");
-end
+subplot(1, 2, 1);
+plot(real(X(:, 1)), 'k', 'LineWidth', 0.5);
+axis([-inf inf -4 4]);
+title("The time-domain");
+subplot(1, 2, 2);
+plot(f_domain, abs(fftshift(fft(X(:, 1)))/Frame), 'k', 'LineWidth', 0.5); 
+title("The frequency-domain");
+axis([0 5000 0 inf]);
 
-for i=1:4
-    subplot(4, 2, i+4);
-    plot(f_domain, abs(fftshift(fft(X(:, i)))/Frame)); % perform FFT on its real part.
-    title("The frequency-domain [" + i + "]");
-    axis([0 5000 0 inf]);
-end
-
-%% Array setup                           
-J = nSensors;                                      % number of sensors
-dx = 3.4*10^-2;                                    % inter-sensor distance in x direction (m)
-dy = 0;                                            % sensor distance in y direction (m)
-c = 340;                                           % sound velocity  (m/s)
-n_source = 2;                                      % number of sources
+%% Array setup
+% number of sensors
+J = nSensors;
+% inter-sensor distance in x direction (m)
+dx = 3.4*10^-2;
+% sensor distance in y direction (m)
+dy = 0;
+% sound velocity  (m/s)
+c = 340;     
+% number of sources
+n_source = 2;
 Index = linspace(0,J-1,J);
-p = (-(J-1)/2 + Index.') * [dx dy];                % sensor position
+% sensor position
+p = (-(J-1)/2 + Index.') * [dx dy];
 
 %% Plot sensor positions
 linspec = {'rx','MarkerSize',12,'LineWidth',2};
@@ -42,24 +42,32 @@ disp('The four microphones are ready !');
 
 
 %% DoA estimation (MUSIC) 
-stride = 0.5;                                                 % determine the angular resolution(deg)
-theta = -90:stride:90;                                      % grid
-f_c = 2500;                                                 % center frequency  (Hz)
-R_x = X'*X/Frame;                                           % autocorrelation estimate
-v = [sin(theta*pi/180); -cos(theta*pi/180)];                % direction vector  
-a_theta = exp(-1i*2*pi*f_c*(p*v)./c);                       % steer vector
+% determine the angular resolution(deg)
+stride = 0.5;
+% grid
+theta = -90:stride:90;
+% center frequency  (Hz)
+f_c = 2500;
+% autocorrelation estimate
+R_x = X'*X/Frame;
+% direction vector 
+v = [sin(theta*pi/180); -cos(theta*pi/180)];  
+% steer vector
+a_theta = exp(-1i*2*pi*f_c*(p*v)./c);
 
 % implement eigen-decomposition 
 
 [V, D] = eig(R_x);
 eig_val = diag(D);
 [eig_val, Idx] = sort(eig_val);
-Un = V(:, Idx(1:J-n_source));                       % noise subspace (columns are eigenvectors), size: J*(J-n_source)
-P_sm = 1./diag(a_theta'*(Un*Un')*a_theta);          % pseudo music power
+% noise subspace (columns are eigenvectors), size: J*(J-n_source)
+Un = V(:, Idx(1:J-n_source));  
+% pseudo music power
+P_sm = 1./diag(a_theta'*(Un*Un')*a_theta);
 
 %% Plot the MUSIC pseudo power spectrum
 figure;
-linspec = {'b-','LineWidth',2};
+linspec = {'k-','LineWidth', 0.5};
 plot(theta, 10*log10(abs(P_sm)), linspec{:});
 title('MUSIC pseudo power spectrum')
 xlabel('Angle in [degrees]');
@@ -81,12 +89,6 @@ doa = theta(doa_Idx);
 doa_source = doa(minIdx);
 [~,maxIdx] = max(abs(doa));
 interfer = doa(maxIdx);
-
-% Find the local maximum;
-% [~, locs] = findpeaks(abs(P_sm)); % default two peaks.
-% locs = theta(sort(locs));
-% doa_source = locs(1);
-% interfer = locs(2);
 
 disp(['The desired source DOA with MUSIC is: ',num2str(doa_source),' deg']);
 disp(['The interfering DOA with MUSIC is: ',num2str(interfer),' deg']);

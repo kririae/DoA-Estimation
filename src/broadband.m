@@ -2,7 +2,7 @@ clear all;
 close all;
 
 %% Before STFT
-load("data\Observation_wb.mat");
+load("..\data\Observation_wb.mat");
 % load("data\Observations_nb.mat");
 [Frame, ~] = size(X);
 
