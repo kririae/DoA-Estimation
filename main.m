@@ -1,18 +1,27 @@
 clear all;
 close all;
 
-%% Before STFT
-load("data\Observation_wb.mat");
-% load("data\Observations_nb.mat");
-[Frame, ~] = size(X);
+fs = 16000;
+[y1, ~] = audioread("01-音轨.wav");
+[y2, ~] = audioread("02-音轨.wav");
+[y3, ~] = audioread("03-音轨.wav");
+[y4, ~] = audioread("04-音轨.wav");
+[Frame, ~] = size(y1);
+X = zeros(Frame, 4);
+X(:, 1) = hilbert(y1);
+X(:, 2) = hilbert(y2);
+X(:, 3) = hilbert(y3);
+X(:, 4) = hilbert(y4);
+% X(:, 1) = y1;
+% X(:, 2) = y2;
+% X(:, 3) = y3;
+% X(:, 4) = y4;
 
-%% STFT
-len = 1024;
+len = 2048;
 inc = 1024;
 nfft = len; % The smallest 2^n \ge len, to optimize FFT
 [st_idx, ed_idx, fn] = separate(len, inc, Frame);
 
-% STFT -> 4 sensors, value after FFT,
 STFT = zeros([fn nfft 4]);
 for i=1:fn
   STFT(i, :, :) = fft(X(st_idx(i):ed_idx(i), :), nfft);
@@ -22,7 +31,7 @@ end
 
 % Initialize data
 J = 4;
-dx = 3.4*10^-2;
+dx = 2.5*10^-2;
 dy = 0;
 c = 340; % Velocity of sound
 Index = linspace(0,J-1,J);
@@ -55,6 +64,14 @@ end
 
 P = 1./P;
 
+figure;
+linspec = {'b-','LineWidth',2};
+plot(theta, 10*log10(abs(P)), linspec{:});
+title('MUSIC pseudo power spectrum')
+xlabel('Angle in [degrees]');
+ylabel('Power spectrum in [dB]');
+xlim([-90,90])
+
 % Find the local maximum;
 P_middle = abs(P(2:end-1));
 P_front = abs(P(1:end-2));
@@ -73,15 +90,6 @@ source_2 = doa(maxIdx);
 
 disp(['The first source with MUSIC is: ',num2str(source_1),' deg']);
 disp(['The second source with MUSIC is: ',num2str(source_2),' deg']);
-
-% figure;
-% linspec = {'b-','LineWidth',2};
-% plot(theta, 10*log10(abs(P)), linspec{:});
-% title('MUSIC pseudo power spectrum')
-% xlabel('Angle in [degrees]');
-% ylabel('Power spectrum in [dB]');
-% xlim([-90,90])
-%% Functions
 
 function [ st_index, ed_index, fn ] = separate(len, inc, Frame)
   fn = floor((Frame-len)/inc + 1);
