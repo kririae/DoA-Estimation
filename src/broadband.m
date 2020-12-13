@@ -74,13 +74,13 @@ source_2 = doa(maxIdx);
 disp(['The first source with MUSIC is: ',num2str(source_1),' deg']);
 disp(['The second source with MUSIC is: ',num2str(source_2),' deg']);
 
-% figure;
-% linspec = {'b-','LineWidth',2};
-% plot(theta, 10*log10(abs(P)), linspec{:});
-% title('MUSIC pseudo power spectrum')
-% xlabel('Angle in [degrees]');
-% ylabel('Power spectrum in [dB]');
-% xlim([-90,90])
+figure;
+linspec = {'b-','LineWidth',2};
+plot(theta, 10*log10(abs(P)), linspec{:});
+title('MUSIC pseudo power spectrum')
+xlabel('Angle in [degrees]');
+ylabel('Power spectrum in [dB]');
+xlim([-90,90])
 %% Functions
 
 function [ st_index, ed_index, fn ] = separate(len, inc, Frame)
