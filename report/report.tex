@@ -152,6 +152,10 @@ The modulus of the result can reach its peak when k equals to some number. Let $
 \mathrm{Im}\{ Y[k] \} = \sum_{j = 1}^n{\sin[ 2 \pi u \cdot (j - 1)]} = \frac{1}{2}\csc(\pi \cdot u)(\cos(\pi \cdot u) - \cos[(2n - 1)\pi \cdot u])
 \end{gather*}
 Consider the graph of $\csc$ function, and other $\sin$ or $\cos$ part limit it with an approximated 1 value, when u approach to 0, the modulus grows up quickly. And when $u = 0$, as $Y[k] = n$
+\begin{gather}
+    \frac{f}{f_s} = \frac{k - 1}{n} \Rightarrow f = \frac{(k - 1)f_s}{n}
+\end{gather}
+
 \subsection{Plot the wave and frequency response}
 The figure:
 \begin{figure}[H]
@@ -159,6 +163,7 @@ The figure:
     \includegraphics[scale=0.7]{img/fig03.eps}\\
 \end{figure}
 Its easy to figure out that the frequency covers a wide span of frequency and can not find a $f_c$.
+
 \subsection{Perform STFT and MUSIC with spectral density matrix}
 The ISSM algorithm is implemented through MATLAB:
 \lstinputlisting[
