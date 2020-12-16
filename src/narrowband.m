@@ -75,20 +75,20 @@ ylabel('Power spectrum in [dB]');
 xlim([-90,90]);
 
 %% Find the local maximum and visualization
-P_middle = abs(P_sm(2:end-1));
-P_front = abs(P_sm(1:end-2));
-P_back = abs(P_sm(3:end));
-logic_front = (P_middle - P_front)>0;
-logic_back = (P_middle - P_back)>0;
-logic = logic_front & logic_back;
-P_middle(~logic) = min(P_middle);
-P_local = [abs(P_sm(1));P_middle;abs(P_sm(end))];
-[~,doa_Idx] = maxk(P_local,n_source);
-doa = theta(doa_Idx);
-[~,minIdx] = min(abs(doa));
-doa_source = doa(minIdx);
-[~,maxIdx] = max(abs(doa));
-interfer = doa(maxIdx);
+[pks, locs] = findpeaks(abs(P_sm));
+[pks, Idx] = sort(pks);
+pks = fliplr(pks);
+Idx = fliplr(Idx);
+[isize, ~] = size(Idx);
+if isize >= 2
+    res = locs(Idx(1:2));
+    source_1 = theta(res(1));
+    source_2 = theta(res(2));
+else
+    res = locs(Idx(1));
+    source_1 = theta(res(1));
+    source_2 = 90;
+end
 
-disp(['The desired source DOA with MUSIC is: ',num2str(doa_source),' deg']);
-disp(['The interfering DOA with MUSIC is: ',num2str(interfer),' deg']);
+disp(['The desired source DOA with MUSIC is: ',num2str(source_1),' deg']);
+disp(['The interfering DOA with MUSIC is: ',num2str(source_2),' deg']);

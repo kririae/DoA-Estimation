@@ -26,7 +26,7 @@
     numbers = left
 }
 
-\title{\bf DoA-Estimation}
+\title{\bf DoA Estimation}
 \author{Zike,Xu \ Zhiyi,Wang \ Dinghao,Cheng}
 \date{\today}
 \begin{document}
@@ -69,7 +69,7 @@ in which
 \begin{gather}
     \ul{x}[k] = \ul{a}(\theta)\cdot s[k] + \ul{n}[k]
 \end{gather}
-for multiple sound sources, add them toghther to get
+for multiple sound sources, add them together to get
 \begin{gather}
     x_i[k] = \sum_{p}a_i(\theta_p)\cdot s_p[k] + n_i[k] \Rightarrow \ul{x}[k] = A \cdot \ul{s}[k] + \ul{n}[k]
 \end{gather}
@@ -165,10 +165,43 @@ The figure:
 Its easy to figure out that the frequency covers a wide span of frequency and can not find a $f_c$.
 
 \subsection{Perform STFT and MUSIC with spectral density matrix}
+\hspace{0.5em} The processes of ISSM are
+\begin{enumerate}
+    \item Perform STFT on the original signal matrix.
+    \item Perform MUSIC with some of its frequency span.
+    \item Add them together, get the result.
+\end{enumerate}
+
 The ISSM algorithm is implemented through MATLAB:
+
 \lstinputlisting[
     language = Matlab, 
     caption = {\bf broadband.m},
     label = {../src/broadband.m}
 ]{../src/broadband.m}
+
+The result of the algorithm is(STFT Para: [len = 1024/inc = 1024]):
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.7]{img/fig04.eps} \\
+\end{figure}
+
+Which claims that:
+\begin{lstlisting}
+    The first source with MUSIC is: -37.5 deg
+    The second source with MUSIC is: 11 deg
+\end{lstlisting}
+
+\newpage
+\section{Microphone Array Experiment(with bonus)}
+\subsection{Adjustment}
+\hspace{0.5em} Real time circumstance is rather complex than the stimulation data, so there's more special cases to deal with. For example, if the result have a long vacant span, there will be a high peak in $deg = 0$ which will interfer our result.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[scale=0.6]{img/fig05.eps} \\
+% \end{figure}
+
+There're multiple solutions to the problem, we can fillter the low frequency band $[0, 20]$ to mitigate the impact of vacant span. Or we can filter the result with its power spectrum. In a word, there's ways through time domain and frequency domain to solve the problem. We chose the former method.
 \end{document}

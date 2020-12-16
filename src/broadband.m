@@ -7,7 +7,7 @@ load("..\data\Observation_wb.mat");
 [Frame, ~] = size(X);
 
 %% STFT
-len = 1024;
+len = 2048;
 inc = 1024;
 nfft = len; % The smallest 2^n \ge len, to optimize FFT
 [st_idx, ed_idx, fn] = separate(len, inc, Frame);
@@ -22,7 +22,7 @@ end
 
 % Initialize data
 J = 4;
-dx = 3.4*10^-2;
+dx = 2.5*10^-2;
 dy = 0;
 c = 340; % Velocity of sound
 Index = linspace(0,J-1,J);
@@ -56,26 +56,42 @@ end
 P = 1./P;
 
 % Find the local maximum;
-P_middle = abs(P(2:end-1));
-P_front = abs(P(1:end-2));
-P_back = abs(P(3:end));
-logic_front = (P_middle - P_front)>0;
-logic_back = (P_middle - P_back)>0;
-logic = logic_front & logic_back;
-P_middle(~logic) = min(P_middle);
-P_local = [abs(P(1));P_middle;abs(P(end))];
-[~,doa_Idx] = maxk(P_local, 2);
-doa = theta(doa_Idx);
-[~,minIdx] = min(abs(doa));
-source_1 = doa(minIdx);
-[~,maxIdx] = max(abs(doa));
-source_2 = doa(maxIdx);
+% P_middle = abs(P(2:end-1));
+% P_front = abs(P(1:end-2));
+% P_back = abs(P(3:end));
+% logic_front = (P_middle - P_front)>0;
+% logic_back = (P_middle - P_back)>0;
+% logic = logic_front & logic_back;
+% P_middle(~logic) = min(P_middle);
+% P_local = [abs(P(1));P_middle;abs(P(end))];
+% [~,doa_Idx] = maxk(P_local, 2);
+% doa = theta(doa_Idx);
+% [~,minIdx] = min(abs(doa));
+% source_1 = doa(minIdx);
+% [~,maxIdx] = max(abs(doa));
+% source_2 = doa(maxIdx);
+
+
+[pks, locs] = findpeaks(abs(P));
+[pks, Idx] = sort(pks);
+pks = fliplr(pks);
+Idx = fliplr(Idx);
+[isize, ~] = size(Idx);
+if isize >= 2
+    res = locs(Idx(1:2));
+    source_1 = theta(res(1));
+    source_2 = theta(res(2));
+else
+    res = locs(Idx(1));
+    source_1 = theta(res(1));
+    source_2 = 90;
+end
 
 disp(['The first source with MUSIC is: ',num2str(source_1),' deg']);
 disp(['The second source with MUSIC is: ',num2str(source_2),' deg']);
 
 figure;
-linspec = {'b-','LineWidth',2};
+linspec = {'k-','LineWidth',0.5};
 plot(theta, 10*log10(abs(P)), linspec{:});
 title('MUSIC pseudo power spectrum')
 xlabel('Angle in [degrees]');
