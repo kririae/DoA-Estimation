@@ -3,10 +3,10 @@ close all;
 
 NSOURCE = 2;
 fs = 16000;
-[y1, ~] = audioread("01-音轨.wav");
-[y2, ~] = audioread("02-音轨.wav");
-[y3, ~] = audioread("03-音轨.wav");
-[y4, ~] = audioread("04-音轨.wav");
+[y1, ~] = audioread("../01-音轨.wav");
+[y2, ~] = audioread("../02-音轨.wav");
+[y3, ~] = audioread("../03-音轨.wav");
+[y4, ~] = audioread("../04-音轨.wav");
 [Frame, ~] = size(y1);
 X = zeros(Frame, 4);
 X(:, 1) = hilbert(y1);
@@ -14,8 +14,8 @@ X(:, 2) = hilbert(y2);
 X(:, 3) = hilbert(y3);
 X(:, 4) = hilbert(y4);
 
-len = 1024;
-inc = 1024;
+len = 2048;
+inc = 2048;
 nfft = len; % The smallest 2^n \ge len, to optimize FFT
 [st_idx, ed_idx, fn] = separate(len, inc, Frame);
 
@@ -74,7 +74,7 @@ ylabel('Power spectrum in [dB]');
 xlim([-90,90])
 
 % Find the local maximum;
-[pks, locs] = findpeaks(arr);
+[pks, locs] = findpeaks(abs(P));
 [pks, Idx] = sort(pks);
 pks = fliplr(pks);
 Idx = fliplr(Idx);
@@ -83,10 +83,13 @@ if isize >= 2
     res = locs(Idx(1:2));
     source_1 = theta(res(1));
     source_2 = theta(res(2));
-else
+elseif isize == 1
     res = locs(Idx(1));
     source_1 = theta(res(1));
-    source_2 = 90;
+    source_2 = -1;
+else
+    source_1 = -1;
+    source_2 = -1;
 end
 
 disp(['The first source with MUSIC is: ',num2str(source_1),' deg']);
