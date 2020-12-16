@@ -75,7 +75,7 @@ ylabel('Power spectrum in [dB]');
 xlim([-90,90]);
 
 %% Find the local maximum and visualization
-[pks, locs] = findpeaks(abs(P_sm));
+[pks, locs] = findpeaks(abs(P));
 [pks, Idx] = sort(pks);
 pks = fliplr(pks);
 Idx = fliplr(Idx);
@@ -84,10 +84,13 @@ if isize >= 2
     res = locs(Idx(1:2));
     source_1 = theta(res(1));
     source_2 = theta(res(2));
-else
+elseif isize == 1
     res = locs(Idx(1));
     source_1 = theta(res(1));
-    source_2 = 90;
+    source_2 = -1;
+else
+    source_1 = -1;
+    source_2 = -1;
 end
 
 disp(['The desired source DOA with MUSIC is: ',num2str(source_1),' deg']);
