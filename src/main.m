@@ -3,10 +3,10 @@ close all;
 
 NSOURCE = 2;
 fs = 16000;
-[y1, ~] = audioread("01-音轨.wav");
-[y2, ~] = audioread("02-音轨.wav");
-[y3, ~] = audioread("03-音轨.wav");
-[y4, ~] = audioread("04-音轨.wav");
+[y1, ~] = audioread("../01-音轨.wav");
+[y2, ~] = audioread("../02-音轨.wav");
+[y3, ~] = audioread("../03-音轨.wav");
+[y4, ~] = audioread("../04-音轨.wav");
 [Frame, ~] = size(y1);
 X = zeros(Frame, 4);
 X(:, 1) = hilbert(y1);
@@ -39,7 +39,7 @@ v = [sin(theta*pi/180); -cos(theta*pi/180)];
 
 P = zeros([180/stride+1 1]); % -90:stride:90
 
-fr = [20 6000]*nfft/fs+1; % range of frequency (to add weight)
+fr = [40 3000]*nfft/fs+1; % range of frequency (to add weight)
 
 % for i=1:ceil(nfft/2)
 for i=floor(fr(1)):ceil(fr(2))
@@ -74,20 +74,26 @@ ylabel('Power spectrum in [dB]');
 xlim([-90,90])
 
 % Find the local maximum;
-P_middle = abs(P(2:end-1));
-P_front = abs(P(1:end-2));
-P_back = abs(P(3:end));
-logic_front = (P_middle - P_front)>0;
-logic_back = (P_middle - P_back)>0;
-logic = logic_front & logic_back;
-P_middle(~logic) = min(P_middle);
-P_local = [abs(P(1));P_middle;abs(P(end))];
-[~,doa_Idx] = maxk(P_local, 2);
-doa = theta(doa_Idx);
-[~,minIdx] = min(abs(doa));
-source_1 = doa(minIdx);
-[~,maxIdx] = max(abs(doa));
-source_2 = doa(maxIdx);
+[pks, locs] = findpeaks(abs(P));
+[pks, Idx] = sort(pks);
+pks = fliplr(pks);
+Idx = fliplr(Idx);
+[isize, ~] = size(Idx);
+if isize >= 2
+    res = locs(Idx(1:2));
+    source_1 = theta(res(1));
+    source_2 = theta(res(2));
+elseif isize == 1
+    res = locs(Idx(1));
+    source_1 = theta(res(1));
+    source_2 = 1000;
+else
+    source_1 = 1000;
+    source_2 = 1000;
+end
+tmp = sort([source_1 source_2]);
+source_1 = tmp(1);
+source_2 = tmp(2);
 
 disp(['The first source with MUSIC is: ',num2str(source_1),' deg']);
 disp(['The second source with MUSIC is: ',num2str(source_2),' deg']);
