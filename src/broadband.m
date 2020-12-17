@@ -8,7 +8,7 @@ load("..\data\Observation_wb.mat");
 
 %% STFT
 len = 2048;
-inc = 128;
+inc = 512;
 nfft = len; % The smallest 2^n \ge len, to optimize FFT
 [st_idx, ed_idx, fn] = separate(len, inc, Frame);
 
@@ -32,7 +32,11 @@ theta = -90:stride:90;
 v = [sin(theta*pi/180); -cos(theta*pi/180)];
 
 P = zeros([180/stride+1 1]); % -90:stride:90
-for i=1:ceil(nfft/2)
+
+fr = [40 3000]*nfft/fs+1; % range of frequency (to add weight)
+
+% for i=1:ceil(nfft/2)
+for i=floor(fr(1)):ceil(fr(2))
     
 % P: index -> f
 % $$\frac{(k - 1)f_s}{n}$$

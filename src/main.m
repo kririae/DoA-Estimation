@@ -39,7 +39,7 @@ v = [sin(theta*pi/180); -cos(theta*pi/180)];
 
 P = zeros([180/stride+1 1]); % -90:stride:90
 
-fr = [20 6000]*nfft/fs+1; % range of frequency (to add weight)
+fr = [40 3000]*nfft/fs+1; % range of frequency (to add weight)
 
 % for i=1:ceil(nfft/2)
 for i=floor(fr(1)):ceil(fr(2))

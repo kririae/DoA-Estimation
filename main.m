@@ -78,20 +78,23 @@ end
 P = 1./P;
 
 % Find the local maximum;
-P_middle = abs(P_sm(2:end-1));
-P_front = abs(P_sm(1:end-2));
-P_back = abs(P_sm(3:end));
-logic_front = (P_middle - P_front)>0;
-logic_back = (P_middle - P_back)>0;
-logic = logic_front & logic_back;
-P_middle(~logic) = min(P_middle);
-P_local = [abs(P_sm(1));P_middle;abs(P_sm(end))];
-[~,doa_Idx] = maxk(P_local, NSOURCE);
-doa = theta(doa_Idx);
-[~,minIdx] = min(abs(doa));
-source_1 = doa(minIdx);
-[~,maxIdx] = max(abs(doa));
-source_2 = doa(maxIdx);
+[pks, locs] = findpeaks(abs(P));
+[pks, Idx] = sort(pks);
+pks = fliplr(pks);
+Idx = fliplr(Idx);
+[isize, ~] = size(Idx);
+if isize >= 2
+    res = locs(Idx(1:2));
+    source_1 = theta(res(1));
+    source_2 = theta(res(2));
+elseif isize == 1
+    res = locs(Idx(1));
+    source_1 = theta(res(1));
+    source_2 = -1;
+else
+    source_1 = -1;
+    source_2 = -1;
+end
 
 tmp = [source_1 source_2];
 tmp = sort(tmp);
