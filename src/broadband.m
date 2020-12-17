@@ -60,7 +60,7 @@ end
 P = 1./P;
 
 % Find the local maximum;
-[pks, locs] = findpeaks(P);
+[pks, locs] = findpeaks(abs(P));
 [pks, Idx] = sort(pks);
 pks = fliplr(pks);
 Idx = fliplr(Idx);
@@ -72,14 +72,12 @@ if isize >= 2
 elseif isize == 1
     res = locs(Idx(1));
     source_1 = theta(res(1));
-    source_2 = -1;
+    source_2 = 1000;
 else
-    source_1 = -1;
-    source_2 = -1;
+    source_1 = 1000;
+    source_2 = 1000;
 end
-
-tmp = [source_1 source_2];
-tmp = sort(tmp);
+tmp = sort([source_1 source_2]);
 source_1 = tmp(1);
 source_2 = tmp(2);
 

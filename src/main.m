@@ -86,11 +86,14 @@ if isize >= 2
 elseif isize == 1
     res = locs(Idx(1));
     source_1 = theta(res(1));
-    source_2 = -1;
+    source_2 = 1000;
 else
-    source_1 = -1;
-    source_2 = -1;
+    source_1 = 1000;
+    source_2 = 1000;
 end
+tmp = sort([source_1 source_2]);
+source_1 = tmp(1);
+source_2 = tmp(2);
 
 disp(['The first source with MUSIC is: ',num2str(source_1),' deg']);
 disp(['The second source with MUSIC is: ',num2str(source_2),' deg']);
