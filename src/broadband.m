@@ -7,15 +7,19 @@ load("..\data\Observation_wb.mat");
 [Frame, ~] = size(X);
 
 %% STFT
-len = 2048;
+len = 512;
 inc = 512;
 nfft = len; % The smallest 2^n \ge len, to optimize FFT
 [st_idx, ed_idx, fn] = separate(len, inc, Frame);
 
 % STFT -> 4 sensors, value after FFT,
 STFT = zeros([fn nfft 4]);
+window = hamming(nfft);
 for i=1:fn
-  STFT(i, :, :) = fft(X(st_idx(i):ed_idx(i), :), nfft);
+    for j=1:4
+        X(st_idx(i):ed_idx(i), j) = X(st_idx(i):ed_idx(i), j).*window;
+    end
+    STFT(i, :, :) = fft(X(st_idx(i):ed_idx(i), :), nfft);
 end
 
 % Perform MUSIC algorithm
@@ -38,23 +42,22 @@ fr = [40 3000]*nfft/fs+1; % range of frequency (to add weight)
 % for i=1:ceil(nfft/2)
 for i=floor(fr(1)):ceil(fr(2))
     
-% P: index -> f
-% $$\frac{(k - 1)f_s}{n}$$
-f_c = (i - 1)*fs/nfft;
-X_ = squeeze(STFT(:, i, :));
-
-[Frame_, ~] = size(X_);
-
-R_x = X_'*X_/Frame_;
-a_theta = exp(-1i*2*pi*f_c*(p*v)./c); % steering vector
-
-[V, D] = eig(R_x);
-eig_val = diag(D);
-[~, Idx] = sort(eig_val);
-Un = V(:, Idx(1:J-2)); % noise subspace
-P_sm = diag(a_theta'*(Un*Un')*a_theta);
-P = P + abs(P_sm);
-
+    % P: index -> f
+    % $$\frac{(k - 1)f_s}{n}$$
+    f_c = (i - 1)*fs/nfft;
+    X_ = squeeze(STFT(:, i, :));
+    
+    [Frame_, ~] = size(X_);
+    
+    R_x = X_'*X_/Frame_;
+    a_theta = exp(-1i*2*pi*f_c*(p*v)./c); % steering vector
+    
+    [V, D] = eig(R_x);
+    eig_val = diag(D);
+    [~, Idx] = sort(eig_val);
+    Un = V(:, Idx(1:J-2)); % noise subspace
+    P_sm = diag(a_theta'*(Un*Un')*a_theta);
+    P = P + abs(P_sm);
 end
 
 P = 1./P;
@@ -94,7 +97,7 @@ xlim([-90,90])
 %% Functions
 
 function [ st_index, ed_index, fn ] = separate(len, inc, Frame)
-  fn = floor((Frame-len)/inc + 1);
-  st_index = (0:(fn-1))*inc + 1;
-  ed_index = (0:(fn-1))*inc + len;
+fn = floor((Frame-len)/inc + 1);
+st_index = (0:(fn-1))*inc + 1;
+ed_index = (0:(fn-1))*inc + len;
 end
