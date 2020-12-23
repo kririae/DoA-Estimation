@@ -133,6 +133,7 @@ Which claims that:
     The interfering DOA with MUSIC is: 34 deg
 \end{lstlisting}
 
+\newpage
 \section{Broadband Estimation}
 \hspace{0.5em} Since broadband speech signal can be non-stationary, we need STFT(Short-time Fourier Transform) to keep information on frequency domain and time domain at the same time.
 
@@ -199,17 +200,54 @@ Which claims that:
 \subsection{Adjustment}
 \hspace{0.5em} Real time circumstance is rather complex than the stimulation data, so there's more special cases to deal with. For example, if the result have a long vacant span, there will be a high peak in $deg = 0$ which will interfer our result.
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[scale=0.6]{img/fig05.eps} \\
-% \end{figure}
-
 There're multiple solutions to the problem, we can fillter the low frequency band $[0, 20]$ to mitigate the impact of vacant span. Or we can filter the result with its power spectrum. In a word, there's ways through time domain and frequency domain to solve the problem. We chose the former method.
 
 And we apply window function to reduce error. Apply the hanning window function to the segments of STFT, $x[s:e]H^t$ to get the signal.
 
 Here are the figures before and after the optimization:
-\begin{figure}
+\begin{figure}[H]
     \centering
+    \subfigure[before window]{
+        \includegraphics[scale=0.4]{img/before_window.eps}}
+    \hspace{0.4in}
+    \subfigure[after window]{
+        \includegraphics[scale=0.4]{img/after_window.eps}}
 \end{figure}
+
+\subsection{Process}
+\hspace{0.5em} And we do the experiment with two cotton threads to specify the direction. Two of our members speak at two directions, holding the cotton threads to get precise directions. Using Audacity, we acquired four tracks of sound.
+
+\begin{figure}[H]
+    \centering
+    \subfigure[before window]{
+        \includegraphics[width=0.4\textwidth]{img/origin.jpg}}
+    \hspace{0.4in}
+    \subfigure[after window]{
+        \includegraphics[width=0.4\textwidth]{img/mod3_precise.eps}}
+\end{figure}
+
+And the result is rather precise:
+\begin{lstlisting}
+    The first source with MUSIC is: −43 deg
+    The second source with MUSIC is: 58 deg
+\end{lstlisting}
+
+\subsection{Real time}
+The real time DoA is implemented in \emph{main.m}, and its core is to use \emph{audioDeviceReader()} to get signal from the audio card.
+
+\begin{lstlisting}
+devReader = audioDeviceReader( ...
+    'Driver', 'DirectSound', ...
+    'SamplesPerFrame', fs*samplingTime, ...
+    'SampleRate', fs, ...
+    'NumChannels', 4, ...
+    'BitDepth', '16-bit integer', ...
+    'Device', '麦克风 (USB YDB01 Audio Effect)', ...
+    'ChannelMappingSource', 'Property', ...
+    'ChannelMapping', [2 1 4 3] ...
+);
+setup(devReader);
+\end{lstlisting}
+
+\subsection{GUI}
 \end{document}
