@@ -5,9 +5,13 @@
 </div>
 [TOC]
 
+This repo contains our code and documents for DoA Estimation in SI100b Project. Aiming to implement certain functions that can estimation the direction of sound signal using a microphone array with 4 sensors.
+
 ## Usage
 
 Click `run` to get result.
+
+See `report/report.tex` or `report/report.pdf` for further information.
 
 - Module 1: `src/narrowband.m`
 - Module 2
@@ -21,6 +25,13 @@ Click `run` to get result.
   - GUI: open `GUI.mlapp` with MATLAB `appdesigner`(with some bugs)
 
 ## Folder Structure
+
+- `data`: Contains simulation data and data collected by ourselves.
+- `docs`: Some notes or restrictions in the process of learning.
+- `report`: `.tex` file
+- `src`: Contains the code of three main modules
+- `main.m`: Implement of real time DoA estimation
+- `GUI.mlapp`: GUI implemented
 
 ## Trouble shootings
 
@@ -55,3 +66,7 @@ And the button's message appeared to be `Retry`. However, due to the feature of 
 ### Cannot stop the GUI program
 
 [TODO: @Aiedails]
+
+## Contributors
+
+[@kririae](https://github.com/kririae); [@Aiedails](https://github.com/Aiedails); [@GuiltyInnocence](https://github.com/GuiltyInnocence);
