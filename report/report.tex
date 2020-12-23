@@ -6,6 +6,7 @@
 \usepackage{xcolor}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{subfigure}
 \usepackage[amssymb]{SIunits}
 
 \geometry{a4paper,scale=0.72}
@@ -205,5 +206,10 @@ Which claims that:
 
 There're multiple solutions to the problem, we can fillter the low frequency band $[0, 20]$ to mitigate the impact of vacant span. Or we can filter the result with its power spectrum. In a word, there's ways through time domain and frequency domain to solve the problem. We chose the former method.
 
+And we apply window function to reduce error. Apply the hanning window function to the segments of STFT, $x[s:e]H^t$ to get the signal.
 
+Here are the figures before and after the optimization:
+\begin{figure}
+    \centering
+\end{figure}
 \end{document}
