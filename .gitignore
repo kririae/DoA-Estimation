@@ -3,3 +3,5 @@ report/*.log
 report/*.synctex.gz
 report/*.toc
 report/*.pdf
+*.wav
+*.asv
