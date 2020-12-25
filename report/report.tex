@@ -10,6 +10,7 @@
 \usepackage[amssymb]{SIunits}
 \usepackage{cite}
 \usepackage{hyperref}
+\usepackage{matlab-prettifier}
 
 \geometry{a4paper,scale=0.72}
 \setlength{\parindent}{0pt}
@@ -117,7 +118,7 @@ We can figure out from the graph that $f_c = 2500\hertz$.
 \subsection{Estimate the DoA}
 The MUSIC algorithm is implemented through MATLAB:
 \lstinputlisting[
-    language = Matlab, 
+    style=Matlab-bw,
     caption = {\bf narrowband.m},
     label = {../src/narrowband.m}
 ]{../src/narrowband.m}
@@ -178,7 +179,7 @@ Its easy to figure out that the frequency covers a wide span of frequency and ca
 The ISSM algorithm is implemented through MATLAB:
 
 \lstinputlisting[
-    language = Matlab, 
+    style = Matlab-bw,
     caption = {\bf broadband.m},
     label = {../src/broadband.m}
 ]{../src/broadband.m}
