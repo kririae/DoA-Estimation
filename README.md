@@ -69,6 +69,10 @@ And the button's message appeared to be `Retry`. However, due to the feature of 
 
 The only way to deal with it currently is to press `Ctrl+C` in the interactive command line(where there's output of angle information), if the application is running independently, kill the process with task manager. That's because `drawnow` function ignore the information produced by the button and continue running. 
 
+### Confused polar graph
+
+Use software which can drive 4-channel microphone to ensure the channel map is right. The channel map may vary from time to time, causing totally useless result.
+
 ## Contributors
 
 [@kririae](https://github.com/kririae); [@Aiedails](https://github.com/Aiedails); [@GuiltyInnocence](https://github.com/GuiltyInnocence);
