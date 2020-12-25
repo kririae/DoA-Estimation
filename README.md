@@ -65,9 +65,9 @@ And the button's message appeared to be `Retry`. However, due to the feature of 
 
 ### Cannot stop the GUI program
 
-This is a bug caused by  MATLAB. The `drawnow` function would randomly ignore the drawback produced by the button and continue running the working drawback without any hesitate. The only way to deal with it(up to now) is to press `Ctrl+C` to let MATLAB stop this.
-
 > When you have another callback while the current callback is still working, there just exists several functions which can interrupt the current callback, like `drawnow`. It says it **should** "updates figures and processes any pending callbacks", which was exactly what I need. **But** what I find out was it didn't work every time.
+
+The only way to deal with it currently is to press `Ctrl+C` in the interactive command line(where there's output of angle information), if the application is running independently, kill the process with task manager. That's because `drawnow` function ignore the information produced by the button and continue running. 
 
 ## Contributors
 

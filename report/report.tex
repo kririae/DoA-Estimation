@@ -8,6 +8,8 @@
 \usepackage{float}
 \usepackage{subfigure}
 \usepackage[amssymb]{SIunits}
+\usepackage{cite}
+\usepackage{hyperref}
 
 \geometry{a4paper,scale=0.72}
 \setlength{\parindent}{0pt}
@@ -133,7 +135,6 @@ Which claims that:
     The interfering DOA with MUSIC is: 34 deg
 \end{lstlisting}
 
-\newpage
 \section{Broadband Estimation}
 \hspace{0.5em} Since broadband speech signal can be non-stationary, we need STFT(Short-time Fourier Transform) to keep information on frequency domain and time domain at the same time.
 
@@ -195,7 +196,6 @@ Which claims that:
     The second source with MUSIC is: 11 deg
 \end{lstlisting}
 
-\newpage
 \section{Microphone Array Experiment(with bonus)}
 \subsection{Adjustment}
 \hspace{0.5em} Real time circumstance is rather complex than the stimulation data, so there's more special cases to deal with. For example, if the result have a long vacant span, there will be a high peak in $deg = 0$ which will interfer our result.
@@ -219,10 +219,10 @@ Here are the figures before and after the optimization:
 
 \begin{figure}[H]
     \centering
-    \subfigure[before window]{
+    \subfigure[Test environment]{
         \includegraphics[width=0.4\textwidth]{img/origin.jpg}}
     \hspace{0.4in}
-    \subfigure[after window]{
+    \subfigure[Output]{
         \includegraphics[width=0.4\textwidth]{img/mod3_precise.eps}}
 \end{figure}
 
@@ -248,6 +248,108 @@ devReader = audioDeviceReader( ...
 );
 setup(devReader);
 \end{lstlisting}
+After finishing the initialization, just apply \emph{music} with those segments and display the real-time information.
 
 \subsection{GUI}
+
+\hspace{0.5em} Our GUI finally came out to be:
+% \begin{figure}
+%     \centering
+%     \includegraphics[scale=0.6]{}
+% \end{figure}
+The GUI part, which focuses on building a user-friendly program doing
+the real-time DOA estimation, can show the probability of every
+direction of the sound through a polar diagram, and display the most
+possible two directions on the interface. The start and stop can be
+entirely controlled by a button. It is a task finished with lots of
+difficulties and obstacles mostly caused by the unfamiliarity with
+MATLAB.
+
+We started with designing an application using MATLAB Guide. But not
+long we found that it's really hard to use so we turn to MATLAB App
+designer, a more easy-to-use tool. But what we didn't know then was that
+it was just the beginning of the tough development process.
+
+Aiming at a GUI which can start and stop the real-time DOA estimation
+algorithm at any time, the first thought of us was to conform to the
+multi-threaded procedural framework by using the object \emph{timer}
+in MATLAB. In fact, it was not only a natural choice but also an
+efficient way to control all the program work and stop according to
+every "tic" of the \emph{timer}. But soon we found that it caused a
+large number of problems, list as follows:
+
+\begin{itemize}
+\item
+  No graph. Though there're three running modes for \emph{timer}, the
+  period is fixed. That means the program itself will pitilessly start
+  the next period regardless of the graph has not been plot yet, which
+  caused that there will be hard to control the \emph{timer.period} to
+  let the graph be plotted.
+\item
+  Chaos. The timer will never stop unless the \emph{stop} command is
+  executed. And if you execute the \emph{start} command while the
+  previous \emph{timer} is still running, the command will create
+  another \emph{timer} doing the same thing as the previous one, and
+  you don't have effective means to tell them apart, which causes that
+  all the command become confusing and lead to the total chaos of the
+  program.
+\item
+  Unreasonable bugs. Though the logic of the program is right, the test
+  of it discovers many unreasonable bugs, such as unfixed update rate of
+  the graph, unexpected crash of MATLAB, not being able to restart after
+  stop, etc.
+\end{itemize}
+
+So it becomes impossible for us to accomplish the GUI through timer. We
+replace it with another construction, which has a prepare part, a main
+working part and a stop part. The prepare part does necessary settings
+like setup the \emph{audioDeviceReader}, change the text of the
+button; the working part do the MUSIC algorithm to estimate the
+direction of the sound and update the graph; the stop part help the
+program stop properly by release the \emph{audioDeviceReader} and
+change the text of the button back. This model works regularly by the
+signal produced by the button. Below are the details of how it work.
+
+\begin{enumerate}
+\item
+  Get started. When the program is first launched, all of the elements
+  are set.
+\item
+  Get prepared. The double-state button is the only controller of the
+  whole program. When it turns to "press", which equals its value turn
+  to "1", the prepare part is firstly launched by the callback of the
+  button.
+\item
+  Work. Working part runs right after the prepare part. It will continue
+  working until the value of the button element comes to "0".
+\item
+  Stop. When the value of the button element comes to "0", the working
+  circulation will be broken and the stop part will do something to
+  recover some properties for next time.
+\end{enumerate}
+
+Seems really easy, but the problem is, if a callback is working without
+special operations, then any other callbacks won't be launched at all.
+That means, if the button turns to the other state, its corresponding
+callback will just keep pending, and any of the properties of any
+elements of the program won't be changed by that. Furthermore, the plot
+course will also be interrupted by next working part. It really costs
+some time to find out the solution: \emph{drawnow}.
+
+It surely a great breakthrough in finding this suitable function. The
+description is "updates figures and processes any pending callbacks".
+That means it can plot the graph and change the value of the button to
+"0" to let the working part know it should stop next time. However, this
+function seems not working every time. It would randomly ignore the
+callback caused by the button and continue working without any
+hesitation. Till now, we still don't know why \emph{drawnow} sometimes
+loses its efficacy, we can only guess that it is caused by the running
+mode of MATLAB and its unclear multi-threaded procedural framework. This
+surely leaves some regret for the project, but we have really tried our
+best.
+
+\begin{thebibliography}{2}
+    \bibitem{MUSIC} R. Schmidt, "Multiple emitter location and signal parameter estimation," in IEEE Transactions on Antennas and Propagation, vol. 34, no. 3, pp. 276-280, March 1986, doi: 10.1109/TAP.1986.1143830.
+    \bibitem{ISSM} Guaning Su and M. Morf, "The signal subspace approach for multiple wide-band emitter location," in IEEE Transactions on Acoustics, Speech, and Signal Processing, vol. 31, no. 6, pp. 1502-1522, December 1983, doi: 10.1109/TASSP.1983.1164233.
+\end{thebibliography}
 \end{document}
