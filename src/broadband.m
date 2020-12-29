@@ -16,9 +16,7 @@ nfft = len; % The smallest 2^n \ge len, to optimize FFT
 STFT = zeros([fn nfft 4]);
 window = hamming(nfft);
 for i=1:fn
-    for j=1:4
-        X(st_idx(i):ed_idx(i), j) = X(st_idx(i):ed_idx(i), j).*window;
-    end
+    X(st_idx(i):ed_idx(i), :) = diag(window)*X(st_idx(i):ed_idx(i), :);
     STFT(i, :, :) = fft(X(st_idx(i):ed_idx(i), :), nfft);
 end
 
@@ -62,27 +60,7 @@ end
 
 P = 1./P;
 
-% Find the local maximum;
-[pks, locs] = findpeaks(abs(P));
-[pks, Idx] = sort(pks);
-pks = fliplr(pks);
-Idx = fliplr(Idx);
-[isize, ~] = size(Idx);
-if isize >= 2
-    res = locs(Idx(1:2));
-    source_1 = theta(res(1));
-    source_2 = theta(res(2));
-elseif isize == 1
-    res = locs(Idx(1));
-    source_1 = theta(res(1));
-    source_2 = 1000;
-else
-    source_1 = 1000;
-    source_2 = 1000;
-end
-tmp = sort([source_1 source_2]);
-source_1 = tmp(1);
-source_2 = tmp(2);
+[source_1, source_2] = find_max(P);
 
 disp(['The first source with MUSIC is: ',num2str(source_1),' deg']);
 disp(['The second source with MUSIC is: ',num2str(source_2),' deg']);

@@ -43,7 +43,7 @@ disp('The four microphones are ready !');
 
 %% DoA estimation (MUSIC) 
 % determine the angular resolution(deg)
-stride = 0.5;
+stride = 1;
 % grid
 theta = -90:stride:90;
 % center frequency  (Hz)
@@ -74,27 +74,7 @@ xlabel('Angle in [degrees]');
 ylabel('Power spectrum in [dB]');
 xlim([-90,90]);
 
-%% Find the local maximum and visualization
-[pks, locs] = findpeaks(abs(P));
-[pks, Idx] = sort(pks);
-pks = fliplr(pks);
-Idx = fliplr(Idx);
-[isize, ~] = size(Idx);
-if isize >= 2
-    res = locs(Idx(1:2));
-    source_1 = theta(res(1));
-    source_2 = theta(res(2));
-elseif isize == 1
-    res = locs(Idx(1));
-    source_1 = theta(res(1));
-    source_2 = 1000;
-else
-    source_1 = 1000;
-    source_2 = 1000;
-end
-tmp = sort([source_1 source_2]);
-source_1 = tmp(1);
-source_2 = tmp(2);
+[source_1, source_2] = find_max(P_sm);
 
 disp(['The desired source DOA with MUSIC is: ',num2str(source_1),' deg']);
 disp(['The interfering DOA with MUSIC is: ',num2str(source_2),' deg']);
