@@ -27,7 +27,8 @@
 
 \lstset{
     flexiblecolumns,
-    numbers = left
+    numbers = left,
+    style=Matlab-bw
 }
 
 \title{\bf DoA Estimation}
@@ -71,11 +72,11 @@ We model the system as
 \end{gather*}
 in which 
 \begin{gather}
-    \ul{x}[k] = \ul{a}(\theta)\cdot s[k] + \ul{n}[k]
+    \ul{x}[k] = \ul{a}(\theta) s[k] + \ul{n}[k]
 \end{gather}
 for multiple sound sources, add them together to get
 \begin{gather}
-    x_i[k] = \sum_{p}a_i(\theta_p)\cdot s_p[k] + n_i[k] \Rightarrow \ul{x}[k] = A \cdot \ul{s}[k] + \ul{n}[k]
+    x_i[k] = \sum_{p}a_i(\theta_p) s_p[k] + n_i[k] \Rightarrow \ul{x}[k] = A \ul{s}[k] + \ul{n}[k]
 \end{gather}
 A is a $J \times P$ matrix, and $\ul{s}[k]$ is the column vector consists of different sound sources.
 
@@ -83,13 +84,13 @@ Denoted the covariance matrix as $R_x$,
 \begin{gather}
    R_x = \mathbb{E}\{\ul{x}[k]\ul{x}^h[k]\} 
 \end{gather}
-expand it with $\ul{x}[k] = A \cdot \ul{s}[k] + \ul{n}[k]$, 
+expand it with $\ul{x}[k] = A \ul{s}[k] + \ul{n}[k]$, 
 \begin{gather}
-    \mathbb{E}\{\ul{x}[k]\ul{x}^h[k]\} = \mathbb{E} \{ (A \cdot \ul{s}[k] + \ul{n}[k])(A \cdot \ul{s}[k] + \ul{n}[k])^h \} \Rightarrow A \mathbb{E}\{ \ul{s}[k]\ul{s}^h[k] \}A^h + \mathbb{E}\{ \ul{n}[k] \ul{n}^h[k]\}
+    \mathbb{E}\{\ul{x}[k]\ul{x}^h[k]\} = \mathbb{E} \{ (A \ul{s}[k] + \ul{n}[k])(A \ul{s}[k] + \ul{n}[k])^h \} \Rightarrow A \mathbb{E}\{ \ul{s}[k]\ul{s}^h[k] \}A^h + \mathbb{E}\{ \ul{n}[k] \ul{n}^h[k]\}
 \end{gather}
 $R_s = \mathbb{E}\{ \ul{s}[k]\ul{s}^h[k] \}$ is a Hermite positive definite matrix, so 
 \begin{gather*}
-    rank(R_s) = rank(A) = rank(A R_s A^h) = P_{source}
+   \mathrm{rank}(R_s) = \mathrm{rank}(A) = \mathrm{rank}(A R_s A^h) = P_{source}
 \end{gather*}
 The rank of the matrix equals to its number of non-zero eigenvalues, so $A R_s A^h$ contains $J - P$ zero eigenvalues. 
 

@@ -16,9 +16,7 @@ nfft = len; % The smallest 2^n \ge len, to optimize FFT
 STFT = zeros([fn nfft 4]);
 window = hamming(nfft);
 for i=1:fn
-    for j=1:4
-        X(st_idx(i):ed_idx(i), j) = X(st_idx(i):ed_idx(i), j).*window;
-    end
+    X(st_idx(i):ed_idx(i), :) = diag(window)*X(st_idx(i):ed_idx(i), :);
     STFT(i, :, :) = fft(X(st_idx(i):ed_idx(i), :), nfft);
 end
 
