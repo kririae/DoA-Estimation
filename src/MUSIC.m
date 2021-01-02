@@ -16,7 +16,7 @@ nfft = len; % The smallest 2^n \ge len, to optimize FFT
 STFT = zeros([fn nfft 4]);
 window = hann(len);
 for i=1:fn
-    X(st_idx(i):ed_idx(i), :) = diag(window)*X(st_idx(i):ed_idx(i), :);
+    % X(st_idx(i):ed_idx(i), :) = diag(window)*X(st_idx(i):ed_idx(i), :);
     STFT(i, :, :) = fft(X(st_idx(i):ed_idx(i), :), nfft);
 end
 
@@ -35,7 +35,7 @@ v = [sin(theta*pi/180); -cos(theta*pi/180)];
 
 P = zeros([180/stride+1 1]); % -90:stride:90
 
-fr = [40 3000]*nfft/fs+1; % range of frequency (to add weight)
+fr = [5 8000]*nfft/fs+1; % range of frequency (to add weight)
 
 % for i=1:ceil(nfft/2)
 for i=floor(fr(1)):ceil(fr(2))
@@ -47,7 +47,8 @@ for i=floor(fr(1)):ceil(fr(2))
     
     [Frame_, ~] = size(X_);
     
-    R_x = X_'*X_/Frame_;
+    X_ = X_.';
+    R_x = X_*X_'/Frame_;
     a_theta = exp(-1i*2*pi*f_c*(p*v)./c); % steering vector
     
     [V, D] = eig(R_x);

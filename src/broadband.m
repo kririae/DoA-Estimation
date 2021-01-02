@@ -47,7 +47,8 @@ for i=floor(fr(1)):ceil(fr(2))
     
     [Frame_, ~] = size(X_);
     
-    R_x = X_'*X_/Frame_;
+    X_ = X_.';
+    R_x = X_*X_'/Frame_;
     a_theta = exp(-1i*2*pi*f_c*(p*v)./c); % steering vector
     
     [V, D] = eig(R_x);
