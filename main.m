@@ -1,7 +1,8 @@
 clear all;
 close all;
 
-% addpath('./src');
+addpath('./src');
+addpath('.');
 
 fs = 16000;
 samplingTime = 0.5; % seconds

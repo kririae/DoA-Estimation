@@ -49,7 +49,8 @@ theta = -90:stride:90;
 % center frequency  (Hz)
 f_c = 2500;
 % autocorrelation estimate
-R_x = X'*X/Frame;
+X = X.';
+R_x = X*X'/Frame;
 % direction vector 
 v = [sin(theta*pi/180); -cos(theta*pi/180)];  
 % steer vector
