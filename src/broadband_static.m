@@ -1,10 +1,10 @@
 clear all;
 close all;
 
-[y1, ~] = audioread("../04-音轨.wav");
-[y2, ~] = audioread("../03-音轨.wav");
-[y3, ~] = audioread("../02-音轨.wav");
-[y4, ~] = audioread("../01-音轨.wav");
+[y1, ~] = audioread("04-音轨.wav");
+[y2, ~] = audioread("03-音轨.wav");
+[y3, ~] = audioread("02-音轨.wav");
+[y4, ~] = audioread("01-音轨.wav");
 [Frame, ~] = size(y1);
 X = zeros(Frame, 4);
 X(:, 1) = y1;
@@ -24,6 +24,7 @@ disp(['The second source with MUSIC is: ',num2str(source_2),' deg']);
 figure;
 linspec = {'k-','LineWidth',0.5};
 plot(theta, 10*log10(abs(P)), linspec{:});
+% plot(theta, abs(P), linspec{:});
 title('MUSIC pseudo power spectrum')
 xlabel('Angle in [degrees]');
 ylabel('Power spectrum in [dB]');

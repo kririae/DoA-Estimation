@@ -16,7 +16,7 @@ nfft = len; % The smallest 2^n \ge len, to optimize FFT
 STFT = zeros([fn nfft 4]);
 window = hann(len);
 for i=1:fn
-    % X(st_idx(i):ed_idx(i), :) = diag(window)*X(st_idx(i):ed_idx(i), :);
+    X(st_idx(i):ed_idx(i), :) = diag(window)*X(st_idx(i):ed_idx(i), :);
     STFT(i, :, :) = fft(X(st_idx(i):ed_idx(i), :), nfft);
 end
 
@@ -35,7 +35,7 @@ v = [sin(theta*pi/180); -cos(theta*pi/180)];
 
 P = zeros([180/stride+1 1]); % -90:stride:90
 
-fr = [5 8000]*nfft/fs+1; % range of frequency (to add weight)
+fr = [40 8000]*nfft/fs+1; % range of frequency (to add weight)
 
 % for i=1:ceil(nfft/2)
 for i=floor(fr(1)):ceil(fr(2))
@@ -54,12 +54,12 @@ for i=floor(fr(1)):ceil(fr(2))
     [V, D] = eig(R_x);
     eig_val = diag(D);
     [~, Idx] = sort(eig_val);
-    Un = V(:, Idx(1:J-2)); % noise subspace
+    Un = V(:, Idx(1:J-NSOURCE)); % noise subspace
     P_sm = diag(a_theta'*(Un*Un')*a_theta);
     P = P + abs(P_sm);
     
 end
 
-P = 1./P;
+P = 1./abs(P);
 end
 
