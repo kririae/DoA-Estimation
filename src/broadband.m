@@ -14,7 +14,7 @@ nfft = len; % The smallest 2^n \ge len, to optimize FFT
 
 % STFT -> 4 sensors, value after FFT,
 STFT = zeros([fn nfft 4]);
-window = hamming(nfft);
+window = hann(nfft);
 for i=1:fn
     X(st_idx(i):ed_idx(i), :) = diag(window)*X(st_idx(i):ed_idx(i), :);
     STFT(i, :, :) = fft(X(st_idx(i):ed_idx(i), :), nfft);
@@ -47,7 +47,8 @@ for i=floor(fr(1)):ceil(fr(2))
     
     [Frame_, ~] = size(X_);
     
-    R_x = X_'*X_/Frame_;
+    X_ = X_.';
+    R_x = X_*X_'/Frame_;
     a_theta = exp(-1i*2*pi*f_c*(p*v)./c); % steering vector
     
     [V, D] = eig(R_x);

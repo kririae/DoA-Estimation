@@ -5,6 +5,8 @@
 </div>
 [TOC]
 
+> GUI and `main.m` is unstable due to the microphone.
+
 This repo contains our code and documents for DoA Estimation in SI100b Project. Aiming to implement certain functions that can estimation the direction of sound signal using a microphone array with 4 sensors.
 
 ## Usage
@@ -72,6 +74,8 @@ The only way to deal with it currently is to press `Ctrl+C` in the interactive c
 ### Confused polar graph
 
 Use software which can drive 4-channel microphone to ensure the channel map is right. The channel map may vary from time to time, causing totally useless result.
+
+Or may be some weird problems with the microphone.(which we have encountered for times)
 
 ## Contributors
 
